@@ -1,0 +1,15 @@
+node_modules
+.next
+.output
+.eve
+.vercel
+.git
+.tmp
+.env
+.env.*
+!.env.example
+*.tsbuildinfo
+.DS_Store
+README.md
+AGENTS.md
+CLAUDE.md

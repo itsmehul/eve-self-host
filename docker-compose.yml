@@ -1,0 +1,20 @@
+services:
+  web:
+    build: .
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      PORT: "3000"
+      # withEve proxies /eve and /.well-known/workflow to the local eve runtime
+      EVE_NEXT_PRODUCTION_PORT: "4274"
+    volumes:
+      # Survive container replacement (workflow run state)
+      - eve-workflow-data:/app/.eve
+      # Docker sandbox backend (optional; requires host Docker)
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+
+volumes:
+  eve-workflow-data:
