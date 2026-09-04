@@ -26,12 +26,15 @@ pnpm start          # Next proxies /eve and /.well-known/workflow to local eve
 pnpm build:eve && PORT=3000 pnpm start:eve
 ```
 
-Docker:
+Docker (Postgres workflow world via `@workflow/world-postgres`):
 
 ```bash
+cp .env.example .env   # set secrets; compose overrides DB host to `db`
 docker compose up --build
+# one-shot schema locally (compose entrypoint also runs this):
+pnpm workflow:bootstrap
 ```
 
-Persist `.eve` (workflow data). Reverse proxy must forward `/eve/` and `/.well-known/workflow/` without path rewrites.
+Reverse proxy must forward `/eve/` and `/.well-known/workflow/` without path rewrites.
 
 Health check: `curl http://localhost:3000/eve/v1/health`

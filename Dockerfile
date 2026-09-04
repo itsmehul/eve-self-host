@@ -42,5 +42,7 @@ COPY --from=builder /app/components ./components
 COPY --from=builder /app/lib ./lib
 COPY --from=builder /app/next.config.ts ./
 COPY --from=builder /app/tsconfig.json ./
+COPY --from=builder /app/scripts ./scripts
+RUN chmod +x ./scripts/docker-entrypoint.sh
 EXPOSE 3000
-CMD ["pnpm", "exec", "next", "start", "-H", "0.0.0.0", "-p", "3000"]
+ENTRYPOINT ["./scripts/docker-entrypoint.sh"]

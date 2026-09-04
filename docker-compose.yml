@@ -1,4 +1,21 @@
 services:
+  db:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: eve
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change-me}
+      POSTGRES_DB: eve
+    ports:
+      - "5432:5432"
+    volumes:
+      - eve-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U eve -d eve" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
   web:
     build: .
     ports:
@@ -9,12 +26,15 @@ services:
       PORT: "3000"
       # withEve proxies /eve and /.well-known/workflow to the local eve runtime
       EVE_NEXT_PRODUCTION_PORT: "4274"
+      DATABASE_URL: postgresql://eve:${POSTGRES_PASSWORD:-change-me}@db:5432/eve
+      WORKFLOW_POSTGRES_URL: postgresql://eve:${POSTGRES_PASSWORD:-change-me}@db:5432/eve
+    depends_on:
+      db:
+        condition: service_healthy
     volumes:
-      # Survive container replacement (workflow run state)
-      - eve-workflow-data:/app/.eve
       # Docker sandbox backend (optional; requires host Docker)
       - /var/run/docker.sock:/var/run/docker.sock
     restart: unless-stopped
 
 volumes:
-  eve-workflow-data:
+  eve-postgres-data:
